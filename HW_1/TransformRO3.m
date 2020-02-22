@@ -12,10 +12,46 @@ function [AA, Q, ZYZ, RPY] = TransformRO3(matR)
 % 2/19/2020, for ME397 ASBR
 
 % Test Input
-if size(matR,1)~=3 || size(matR,2)~=3 || det(matR * matR')~=1 || norm(matR*matR'-eye(3))
+if size(matR,1)~=3 || size(matR,2)~=3 || det(matR)~=1 || norm(matR*matR'-eye(3))
     error('Wrong Input!');
 end
 % Axis-angle representation
+theta = acos(0.5*(trace(matR)-1));
+if theta == 0 % arbitrary axis is ok, we pick [1, 0, 0] here
+    AA = [1, 0, 0, theta];
+elseif theta == pi %
+    xx = (matR(1,1)+1)/2;
+    yy = (matR(2,2)+1)/2;
+    zz = (matR(3,3)+1)/2;
+    xy = (matR(1,2)+matR(2,1))/4;
+    xz = (matR(1,3)+matR(3,1))/4;
+    yz = (matR(2,3)+matR(3,2))/4;
+    if matR(1,1)>matR(2,2) && matR(1,1)>matR(3,3)
+        if matR(1,1) == -1
+            AA = [0, sqrt(2)/2, sqrt(2)/2, theta]; 
+        else
+            x = sqrt(xx);
+            AA = [x, xy/x, xz/x, theta];
+        end
+    elseif matR(2,2)>matR(3,3)
+        if matR(2,2) == -1
+            AA = [sqrt(2)/2, 0, sqrt(2)/2, theta];
+        else
+            y = sqrt(yy);
+            AA = [xy/y, y, yz/y, theta];
+        end
+    else
+        if matR(3,3) == -1
+            AA = [sqrt(2)/2, sqrt(2)/2, 0, theta];
+        else
+            z = sqrt(zz);
+            AA = [xz/z, yz/z, z, theta];
+        end
+    end
+else % No singularity happens
+    w_hat = (matR - matR')/(2*sin(theta));
+    AA = [w_hat(3,2), w_hat(1,3), w_hat(2,1), theta];
+end
 
 % Quaternion representation
 trR = trace(matR);

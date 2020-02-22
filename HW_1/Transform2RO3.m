@@ -19,7 +19,6 @@ function matR = Transform2RO3(varargin)
 if nargin == 2 % it may be axis-angle
     w = varargin{1};
     theta = varargin{2};
-    disp(isa(theta, 'float'));
     if size(w,2) ~= 3 || ~isa(w, 'float') || norm(w) == 0
         error('Wrong axis input!');
     elseif ~isa(theta, 'float')
