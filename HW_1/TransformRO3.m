@@ -1,5 +1,5 @@
 function [AA, Q, ZYZ, RPY] = TransformRO3(matR)
-% Calculate equivalent axis-angle, quaternion, ZYZ and
+% Transform to equivalent axis-angle, quaternion, ZYZ and
 % roll-pitch-yaw representation by given rotation matrix R
 % [AA, Q, ZYZ, RPY] = TransformRO3(matR)
 % Input:
@@ -12,7 +12,7 @@ function [AA, Q, ZYZ, RPY] = TransformRO3(matR)
 % 2/19/2020, for ME397 ASBR
 
 % Test Input
-if size(matR,1)~=3 || size(matR,2)~=3 || det(matR)~=1 || norm(matR*matR'-eye(3))
+if size(matR,1)~=3 || size(matR,2)~=3 || abs(det(matR)-1) > 0.1 || norm(matR*matR'-eye(3)) > 0.1
     error('Wrong Input!');
 end
 % Axis-angle representation
@@ -56,7 +56,30 @@ else
 end
 Q = [q0, q1, q2, q3];
 % ZYZ representation
-
+theta = atan2(sqrt(matR(1,3)^2 + matR(2,3)^2), matR(3,3));
+if theta == 0
+    phi = 0;
+    psi = atan2(matR(2,1), matR(1,1));
+elseif theta == pi
+    phi = 0;
+    psi = -atan2(matR(2,1), matR(1,1));
+else
+    phi = atan2(matR(2,3), matR(1,3));
+    psi = atan2(matR(3,2), -matR(3,1));
+end
+ZYZ = [phi; theta; psi];
 % roll-pitch-yaw representation
+beta = atan2(-matR(3,1), sqrt(matR(1,1)^2 + matR(2,1)^2));
+if beta == pi/2
+  alpha = 0;
+  gamma = atan2(matR(1,2), matR(2,2));
+elseif beta == -pi/2
+  alpha = 0;
+  gamma = -atan2(matR(1,2), matR(2,2));
+else
+  alpha = atan2(matR(2,1)/cos(beta), matR(1,1)/cos(beta));
+  gamma = atan2(matR(3,2)/cos(beta), matR(3,3)/cos(beta));
+end
+RPY = [gamma; beta; alpha];
 
 end

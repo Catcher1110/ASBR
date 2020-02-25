@@ -1,5 +1,5 @@
 function matR = Transform2RO3(varargin)
-% Calculate the equivalent rotation matrix by given axis-angle
+% Transform to the equivalent rotation matrix by given axis-angle
 % or quaternion representation
 % matR = Transform2RO3(varargin)
 % Input:
