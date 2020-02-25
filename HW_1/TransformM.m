@@ -1,6 +1,5 @@
 function T_tr = TransformM(q, s_hat, h, theta)
-% Calculate the equivalent rotation matrix by given axis-angle
-% or quaternion representation
+% Calculate the transform matrix
 % T_tr = TransformM(q, s_hat, h, theta)
 % Input:
 %   point: q, unit direction: s_hat, pitch: h and angle: theta
