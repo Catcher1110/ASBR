@@ -13,7 +13,7 @@ function matR = Transform2RO3(varargin)
 %   theta = pi/2 - angle
 %   matR = Transform2RO3(vec)
 %   matR = Transform2RO3(w, theta)
-% Written by Jian Chu(jc86537)
+% Written by Jian Chu(jc86537) Yang Liu(yl34825)
 % 2/19/2020, for ME397 ASBR
 
 if nargin == 2 % it may be axis-angle

@@ -5,14 +5,16 @@ function [AA, Q, ZYZ, RPY] = TransformRO3(matR)
 % Input:
 %   matR - rotation matrix, in SO(3)
 % Output:
-%   AA - axis-angle representation
-%   Q - Quaternion representation
+%   AA - axis-angle representation (1*4, [w1,w2,w3,angle])
+%   Q - Quaternion representation (1*4, [q0, q1i, q2j, q3k])
+%   ZYZ - ZYZ representation (3*1)
+%   RPY - roll-pitch-yaw representation (3*1)
 
-% Written by Jian Chu(jc86537)
+% Written by Jian Chu(jc86537) Yang Liu(yl34825)
 % 2/19/2020, for ME397 ASBR
 
 % Test Input
-if size(matR,1)~=3 || size(matR,2)~=3 || abs(det(matR)-1) > 0.1 || norm(matR*matR'-eye(3)) > 0.1
+if size(matR,1)~=3 || size(matR,2)~=3 || abs(det(matR)-1) > 0.01 || norm(matR*matR'-eye(3)) > 0.01
     error('Wrong Input!');
 end
 % Axis-angle representation
