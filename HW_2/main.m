@@ -40,6 +40,14 @@ end
 disp("Body Screws are: ");
 disp(B);
 
+%% Show Robot
+robot = loadrobot("frankaEmikaPanda");
+Name = {'panda_joint1', 'panda_joint2', 'panda_joint3', 'panda_joint4',...
+    'panda_joint5', 'panda_joint6', 'panda_joint7', 'panda_finger_joint1', 'panda_finger_joint2'};
+JointAngle = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+initialConfiguration = struct('JointName', Name, 'JointPosition', JointAngle);
+show(robot, initialConfiguration);
+
 %% PA (a),(b)
 FKs = FK_space(S, M, theta, qs);
 disp("Forward Kinematics (Space Frame): ");
@@ -63,9 +71,9 @@ disp(Jb);
 theta0 = [1 1 1 1 1 1 1];
 Js0 = double(subs(Js, theta, theta0));
 ellipsoid_plot(Js0);
-J_iso = J_isotropy(Js0);
-J_con = J_condition(Js0);
-J_ellipsoid_volume(Js0);
+[J_iso1, J_iso2] = J_isotropy(Js0);
+[J_con1, J_con2]= J_condition(Js0);
+[J_vol1, J_vol2]= J_ellipsoid_volume(Js0);
 %% PA (h)
 %desired configuration b
 thetad = [1 1 1 1 1 1 1];
@@ -73,7 +81,7 @@ Tsd = double(subs(FKs, theta, thetad));
 % initial guess
 theta0 = [0 0 0 0 0 0 0];
 % input body jacobian Jb
-[AllTheta, AllT] = J_inverse_kinematics(FKb,Jb,Tsd,theta0);
+[AllTheta, AllT, Allwb, Allvb, ~] = J_inverse_kinematics(FKb,Jb,Tsd,theta0);
 
 % Display Output
 [n, ~] = size(AllTheta);
@@ -110,7 +118,7 @@ Tsd = double(subs(FKs, theta, thetad));
 % initial guess
 theta0 = [0 0 0 0 0 0 0];
 % input body jacobian Jb
-[AllTheta, AllT] = J_transpose_kinematics(FKb,Jb,Tsd,theta0);
+[AllTheta, AllT, ~, ~, ~] = J_transpose_kinematics(FKb,Jb,Tsd,theta0);
 % Display Output
 [n, ~] = size(AllTheta);
 for i = 1:1:n
@@ -141,7 +149,7 @@ Tsd = double(subs(FKs, theta, thetad));
 % initial guess
 theta0 = [0 0 0 0 0 0 0];
 % input body jacobian Jb
-[AllTheta, AllT] = redundancy_resolution(FKb,Jb,Tsd,theta0);
+[AllTheta, AllT, ~, ~,~] = redundancy_resolution(FKb,Jb,Tsd,theta0);
 % Display Output
 [n, ~] = size(AllTheta);
 for i = 1:1:n
@@ -170,12 +178,12 @@ disp(Tsd);
 %arbitrary configuration a
 Tsb          =double(subs(FKs, theta, [0 0 0 0 0 0 0]));
 %desired configuration b
-thetad       =[1 1 1 -1 1 1 1];
+thetad       =[1 1 1 1 1 1 1];
 Tsd          =double(subs(FKs, theta, thetad));
 % initial guess
 theta0       =[0 0 0 0 0 0 0];
 % input body jacobian Jb
-[AllTheta, AllT] = DLS_inverse_kinematics(FKb,Jb,Tsd,theta0);
+[AllTheta, AllT, ~, ~, ~] = DLS_inverse_kinematics(FKb,Jb,Tsd,theta0);
 % Display Output
 [n, ~] = size(AllTheta);
 for i = 1:1:n

@@ -1,9 +1,17 @@
-function mu2 =J_condition(J)
+function [mu2_w, mu2_v] = J_condition(J)
+Jw = J(1:3, :);
+Jv = J(4:6, :);
 
-A         =J*J';
-e         =eig(A);
-lambda_max=max(e);
-lambda_min=min(e);
-mu2       =lambda_max/lambda_min;
+Aw = Jw * Jw';
+Av = Jv * Jv';
 
+ew         =eig(Aw);
+lambda_max_w=max(ew);
+lambda_min_w=min(ew);
+mu2_w       =lambda_max_w/lambda_min_w;
+
+ev         =eig(Av);
+lambda_max_v=max(ev);
+lambda_min_v=min(ev);
+mu2_v       =lambda_max_v/lambda_min_v;
 end

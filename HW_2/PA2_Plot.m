@@ -22,7 +22,7 @@ function varargout = PA2_Plot(varargin)
 
 % Edit the above text to modify the response to help PA2_Plot
 
-% Last Modified by GUIDE v2.5 02-Apr-2020 02:33:17
+% Last Modified by GUIDE v2.5 12-Apr-2020 17:56:29
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -408,26 +408,27 @@ t5 = str2double(handles.theta5.String);
 t6 = str2double(handles.theta6.String);
 t7 = str2double(handles.theta7.String);
 
+% L(1) = Link('revolute', 'a',     0.0, 'd', 0.333, 'alpha',   0.0, 'modified');
+% L(2) = Link('revolute', 'a',     0.0, 'd',   0.0, 'alpha', -pi/2, 'modified');
+% L(3) = Link('revolute', 'a',     0.0, 'd', 0.316, 'alpha',  pi/2, 'modified');
+% L(4) = Link('revolute', 'a',  0.0825, 'd',   0.0, 'alpha',  pi/2, 'modified');
+% L(5) = Link('revolute', 'a', -0.0825, 'd', 0.384, 'alpha', -pi/2, 'modified');
+% L(6) = Link('revolute', 'a',     0.0, 'd',   0.0, 'alpha',  pi/2, 'modified');
+% L(7) = Link('revolute', 'a',   0.088, 'd',   0.0, 'alpha',  pi/2, 'modified');
+% 
+% Robot = SerialLink(L);
+% Robot.name = 'Franka Emika Panda';
+% axes(handles.simulation);
+% Robot.plot([t1 t2 t3 t4 t5 t6 t7]);
 
-k = 1000;
-L1 = k * 0.333;
-L2 = k * 0.316;
-L3 = k * 0.0825;
-L4 = k * 0.384;
-L5 = k * 0.088;
+robot = loadrobot("frankaEmikaPanda");
+Name = {'panda_joint1', 'panda_joint2', 'panda_joint3', 'panda_joint4',...
+    'panda_joint5', 'panda_joint6', 'panda_joint7', 'panda_finger_joint1', 'panda_finger_joint2'};
+JointAngle = {t1, t2, t3, t4, t5, t6, t7, 0, 0};
+initialConfiguration = struct('JointName', Name, 'JointPosition', JointAngle);
+axes(handles.simulation);
+show(robot, initialConfiguration);
 
-L(1) = Link('revolute', 'd', L1, 'a', 0, 'alpha', 0);
-L(2) = Link('revolute', 'd', 0, 'a', 0, 'alpha', -pi/2);
-L(3) = Link('revolute', 'd', L2, 'a', 0, 'alpha', pi/2);
-L(4) = Link('revolute', 'd', 0, 'a', L3, 'alpha', pi/2);
-L(5) = Link('revolute', 'd', L4, 'a', -L3, 'alpha', -pi/2);
-L(6) = Link('revolute', 'd', 0, 'a', 0, 'alpha', pi/2);
-L(7) = Link('revolute', 'd', 0, 'a', L5, 'alpha', pi/2);
-Robot = SerialLink(L);
-Robot.name = 'Franka Emika Panda';
-Robot.plot([t1 t2 t3 t4 t5 t6 t7]);
-
-%T = FK_space();
 
 % --- Executes on button press in btn_inverse.
 function btn_inverse_Callback(hObject, eventdata, handles)
@@ -462,23 +463,19 @@ t7 = str2double(handles.theta7.String);
 
 theta0 = [t1 t2 t3 t4 t5 t6 t7];
 
-k = 1000;
-L1 = k * 0.333;
-L2 = k * 0.316;
-L3 = k * 0.0825;
-L4 = k * 0.384;
-L5 = k * 0.088;
+% L(1) = Link('revolute', 'a',     0.0, 'd', 0.333, 'alpha',   0.0, 'modified');
+% L(2) = Link('revolute', 'a',     0.0, 'd',   0.0, 'alpha', -pi/2, 'modified');
+% L(3) = Link('revolute', 'a',     0.0, 'd', 0.316, 'alpha',  pi/2, 'modified');
+% L(4) = Link('revolute', 'a',  0.0825, 'd',   0.0, 'alpha',  pi/2, 'modified');
+% L(5) = Link('revolute', 'a', -0.0825, 'd', 0.384, 'alpha', -pi/2, 'modified');
+% L(6) = Link('revolute', 'a',     0.0, 'd',   0.0, 'alpha',  pi/2, 'modified');
+% L(7) = Link('revolute', 'a',   0.088, 'd',   0.0, 'alpha',  pi/2, 'modified');
+% Robot = SerialLink(L);
+% Robot.name = 'Franka Emika Panda';
 
-L(1) = Link('revolute', 'd', L1, 'a', 0, 'alpha', 0);
-L(2) = Link('revolute', 'd', 0, 'a', 0, 'alpha', -pi/2);
-L(3) = Link('revolute', 'd', L2, 'a', 0, 'alpha', pi/2);
-L(4) = Link('revolute', 'd', 0, 'a', L3, 'alpha', pi/2);
-L(5) = Link('revolute', 'd', L4, 'a', -L3, 'alpha', -pi/2);
-L(6) = Link('revolute', 'd', 0, 'a', 0, 'alpha', pi/2);
-L(7) = Link('revolute', 'd', 0, 'a', L5, 'alpha', pi/2);
-Robot = SerialLink(L);
-Robot.name = 'Franka Emika Panda';
-
+robot = loadrobot("frankaEmikaPanda");
+Name = {'panda_joint1', 'panda_joint2', 'panda_joint3', 'panda_joint4',...
+    'panda_joint5', 'panda_joint6', 'panda_joint7', 'panda_finger_joint1', 'panda_finger_joint2'};
 % Define Fkb, Jb
 M = [1 0 0 0.0880;
      0 -1 0 0;
@@ -506,14 +503,19 @@ menuValue = contents{get(handles.menu_1, 'Value')};
 disp(menuValue);
 switch menuValue
     case '--- Choose Algorithm'
-        [AllTheta, ~] = J_inverse_kinematics(FKb,Jb,Tsd,theta0);
+        [AllTheta, ~, Allwb, Allvb, AllJb0] = J_inverse_kinematics(FKb,Jb,Tsd,theta0);
     case 'Inverse Kinematics'
-        [AllTheta, ~] = J_inverse_kinematics(FKb,Jb,Tsd,theta0);        
+        [AllTheta, ~, Allwb, Allvb, AllJb0] = J_inverse_kinematics(FKb,Jb,Tsd,theta0);        
     case 'Transpose Kinematics'
-        [AllTheta, ~] = J_transpose_kinematics(FKb,Jb,Tsd,theta0);
+        [AllTheta, ~, Allwb, Allvb, AllJb0] = J_transpose_kinematics(FKb,Jb,Tsd,theta0);
+    case 'DLS'
+        [AllTheta, ~, Allwb, Allvb, AllJb0] = DLS_inverse_kinematics(FKb,Jb,Tsd,theta0);
+    case 'Redundancy Resolution'
+        [AllTheta, ~, Allwb, Allvb, AllJb0] = redundancy_resolution(FKb,Jb,Tsd,theta0);
 end
 
 [n, ~] = size(AllTheta);
+intervalt = 10 / n;
 for i = 1:1:n
     thetai = AllTheta(i, :);
     handles.theta1.String = num2str(thetai(1));
@@ -523,8 +525,68 @@ for i = 1:1:n
     handles.theta5.String = num2str(thetai(5));
     handles.theta6.String = num2str(thetai(6));
     handles.theta7.String = num2str(thetai(7));
-    Robot.plot(thetai);
-    pause(0.1);
+    axes(handles.simulation);
+%     Robot.plot(thetai);
+    JointAngle = {thetai(1), thetai(2), thetai(3), thetai(4), thetai(5), thetai(6), thetai(7), 0, 0};
+    Configuration_i = struct('JointName', Name, 'JointPosition', JointAngle);
+    show(robot, Configuration_i);
+    axes(handles.Ellipsoidw);
+    Jw = AllJb0{i}(1:3, :);
+    Aw = Jw * Jw';
+    [~,Sw,Vw] = svd(Aw);
+    [xw, yw, zw] = ellipsoid(0,0,0,Sw(1,1),Sw(2,2),Sw(3,3));
+    hw = surf(xw, yw, zw);
+    AAw = rotm2axang(Vw);
+    ww = AAw(1:3);
+    thetaw = AAw(4);
+    rotate(hw, ww, thetaw);
+    axes(handles.Ellipsoidv);
+    Jv = AllJb0{i}(4:6, :);
+    Av = Jv * Jv';
+    [Vv,Sv,~] = svd(Av);
+    [xv, yv, zv] = ellipsoid(0,0,0,Sv(1, 1),Sv(2, 2),Sv(3, 3));
+    hv = surf(xv, yv, zv);
+    AAv = rotm2axang(Vv);
+    wv = AAv(1:3);
+    thetav = AAv(4);
+    rotate(hv, wv, thetav);
+    mu3_w       =sqrt(det(Aw));
+    mu3_v       =sqrt(det(Av));
+    handles.volumew.String = num2str(mu3_w, 4);
+    handles.volumev.String = num2str(mu3_v, 4);
+    axes(handles.normw);
+    hold on;
+    plot(i, Allwb(i),'kx');
+    axes(handles.normv);
+    hold on;
+    plot(i, Allvb(i),'kx');
+    axes(handles.Condition);
+    hold on;
+    ew         =eig(Aw);
+    lambda_max_w=max(ew);
+    lambda_min_w=min(ew);
+    mu2_w       =lambda_max_w/lambda_min_w;
+    plot(i, mu2_w, 'kx');
+    ev         =eig(Av);
+    lambda_max_v=max(ev);
+    lambda_min_v=min(ev);
+    mu2_v       =lambda_max_v/lambda_min_v;
+    plot(i, mu2_v, 'rx');
+    legend('condition number of w','condition number of v');
+    axes(handles.Isotropy);
+    hold on;
+    ew         =eig(Aw);
+    lambda_max_w=max(ew);
+    lambda_min_w=min(ew);
+    mu1_w       =sqrt(lambda_max_w/lambda_min_w);
+    plot(i, mu1_w, 'kx');
+    ev         =eig(Av);
+    lambda_max_v=max(ev);
+    lambda_min_v=min(ev);
+    mu1_v       =sqrt(lambda_max_v/lambda_min_v);
+    plot(i, mu1_v, 'rx');
+    legend('Isotropy of w','Isotropy of v');
+    pause(0.02);
 end
 
 
@@ -989,3 +1051,95 @@ handles.T31.String = num2str(Tsd(3,1));
 handles.T32.String = num2str(Tsd(3,2));
 handles.T33.String = num2str(Tsd(3,3));
 handles.T34.String = num2str(Tsd(3,4));
+
+
+
+function norm_w_Callback(hObject, eventdata, handles)
+% hObject    handle to norm_w (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of norm_w as text
+%        str2double(get(hObject,'String')) returns contents of norm_w as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function norm_w_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to norm_w (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function norm_v_Callback(hObject, eventdata, handles)
+% hObject    handle to norm_v (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of norm_v as text
+%        str2double(get(hObject,'String')) returns contents of norm_v as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function norm_v_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to norm_v (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function volumew_Callback(hObject, eventdata, handles)
+% hObject    handle to volumew (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of volumew as text
+%        str2double(get(hObject,'String')) returns contents of volumew as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function volumew_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to volumew (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function volumev_Callback(hObject, eventdata, handles)
+% hObject    handle to volumev (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of volumev as text
+%        str2double(get(hObject,'String')) returns contents of volumev as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function volumev_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to volumev (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end

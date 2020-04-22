@@ -1,12 +1,26 @@
 % This file only can run in Matlab 2020a right now.
 
 % Load Robot Model(Valid only for Matlab 2020a)
+clear;
+clc;
 robot = loadrobot("frankaEmikaPanda");
 Name = {'panda_joint1', 'panda_joint2', 'panda_joint3', 'panda_joint4',...
     'panda_joint5', 'panda_joint6', 'panda_joint7', 'panda_finger_joint1', 'panda_finger_joint2'};
 JointAngle = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 initialConfiguration = struct('JointName', Name, 'JointPosition', JointAngle);
+subplot(2,4,[1 2 5 6])
 show(robot, initialConfiguration);
+title('Simulation');
+subplot(2,4,3);
+title('Ellipsoid w');
+subplot(2,4,4);
+title('Ellipsoid v');
+subplot(2,4,7);
+hold on;
+title('norm of wb');
+subplot(2,4,8);
+hold on;
+title('norm of vb');
 pause(0.1);
 
 %% Defined Robot Parameters
@@ -57,12 +71,12 @@ Js = J_space(S, theta);
 Jb = J_body(B, theta);
 
 %% desired configuration b
-thetad = [1 2 1 1 0 1 1];
+thetad = [0.5 0.5 0.5 0.5 0.5 0.5 0.5];
 Tsd = double(subs(FKs, theta, thetad));
 % initial guess
 theta0 = [0 0 0 0 0 0 0];
 % input body jacobian Jb
-[AllTheta, AllT] = J_transpose_kinematics(FKb,Jb,Tsd,theta0);
+[AllTheta, AllT, Allwb, Allvb, AllJb0] = J_transpose_kinematics(FKb,Jb,Tsd,theta0);
 
 % Display Output
 [n, ~] = size(AllTheta);
@@ -76,7 +90,37 @@ for i = 1:1:n
 %     fprintf('The configuration after %d iterations is: \n', i);
 %     disp(AllT{i});
     configuration_i = struct('JointName', Name, 'JointPosition', JointAngle);
+    subplot(2, 4, [1 2 5 6]);
     show(robot, configuration_i);
+    subplot(2, 4, 3);
+    Jw = AllJb0{i}(1:3, :);
+    Aw = Jw * Jw';
+    [~,Sw,Vw] = svd(Aw);
+    [xw, yw, zw] = ellipsoid(0,0,0,Sw(1,1),Sw(2,2),Sw(3,3));
+    hw = surf(xw, yw, zw);
+    AAw = rotm2axang(Vw);
+    ww = AAw(1:3);
+    thetaw = AAw(4);
+%    [ww, thetaw] = R2AA(Vw);
+    rotate(hw, ww, thetaw);
+    title('Angular Velocities Elliposid');
+    subplot(2, 4, 4);
+    Jv = AllJb0{i}(4:6, :);
+    Av = Jv * Jv';
+    [Vv,Sv,~] = svd(Av);
+    [xv, yv, zv] = ellipsoid(0,0,0,Sv(1, 1),Sv(2, 2),Sv(3, 3));
+    hv = surf(xv, yv, zv);
+    AAv = rotm2axang(Vv);
+    wv = AAv(1:3);
+    thetav = AAv(4);
+%    [wv, thetav] = R2AA(Vv);
+    rotate(hv, wv, thetav);
+    title('Linear Velocities Elliposid');
+    % Add Plot Ellipsoid
+    subplot(2, 4, 7);
+    plot(i, Allwb(i),'x');
+    subplot(2, 4, 8);
+    plot(i, Allvb(i),'x');
     pause(0.1);
 end
 % disp("Desired Configuration is");
